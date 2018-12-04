@@ -13,6 +13,7 @@ CREATE TABLE ks_einrichtunginoeffentlichenbereichen (
 	zustand			integer,
 	PRIMARY KEY (ogc_fid)
 );
+COMMENT ON TABLE ks_einrichtunginoeffentlichenbereichen IS 'BASE: ks_einrichtunginoeffentlichenbereichen';
 
 SELECT AddGeometryColumn('ks_einrichtunginoeffentlichenbereichen','wkb_geometry',:alkis_epsg,'GEOMETRY',2);
 
@@ -48,6 +49,7 @@ CREATE TABLE ks_sonstigesbauwerk (
 	bezeichnung		varchar,
 	PRIMARY KEY (ogc_fid)
 );
+COMMENT ON TABLE ks_sonstigesbauwerk IS 'BASE: ks_sonstigesbauwerk';
 
 SELECT AddGeometryColumn('ks_sonstigesbauwerk','wkb_geometry',:alkis_epsg,'GEOMETRY',2);
 
@@ -67,6 +69,7 @@ CREATE TABLE ks_einrichtungimstrassenverkehr(
 	zustand			integer,
 	PRIMARY KEY (ogc_fid)
 );
+COMMENT ON TABLE ks_einrichtungimstrassenverkehr IS 'BASE: ks_einrichtungimstrassenverkehr';
 
 SELECT AddGeometryColumn('ks_einrichtungimstrassenverkehr','wkb_geometry',:alkis_epsg,'GEOMETRY',2);
 
@@ -88,6 +91,7 @@ CREATE TABLE ks_verkehrszeichen (
 	bezeichnung		varchar,
 	PRIMARY KEY (ogc_fid)
 );
+COMMENT ON TABLE ks_verkehrszeichen IS 'BASE: ks_verkehrszeichen';
 
 SELECT AddGeometryColumn('ks_verkehrszeichen','wkb_geometry',:alkis_epsg,'POINT',2);
 
@@ -105,6 +109,7 @@ CREATE TABLE ks_einrichtungimbahnverkehr(
 	bezeichnung		varchar,
 	PRIMARY KEY (ogc_fid)
 );
+COMMENT ON TABLE ks_einrichtungimbahnverkehr IS 'BASE: ks_einrichtungimbahnverkehr';
 
 SELECT AddGeometryColumn('ks_einrichtungimbahnverkehr','wkb_geometry',:alkis_epsg,'GEOMETRY',2);
 
@@ -123,6 +128,7 @@ CREATE TABLE ks_bauwerkimgewaesserbereich (
 	zustand			integer,
 	PRIMARY KEY (ogc_fid)
 );
+COMMENT ON TABLE ks_bauwerkimgewaesserbereich IS 'BASE: ks_bauwerkimgewaesserbereich';
 
 SELECT AddGeometryColumn('ks_bauwerkimgewaesserbereich','wkb_geometry',:alkis_epsg,'LINESTRING',2);
 
@@ -143,6 +149,7 @@ CREATE TABLE ks_vegetationsmerkmal (
 	bezeichnung		varchar,
 	PRIMARY KEY (ogc_fid)
 );
+COMMENT ON TABLE ks_vegetationsmerkmal IS 'BASE: ks_vegetationsmerkmal';
 
 SELECT AddGeometryColumn('ks_vegetationsmerkmal','wkb_geometry',:alkis_epsg,'GEOMETRY',2);
 
@@ -160,6 +167,7 @@ CREATE TABLE ks_bauraumoderbodenordnungsrecht (
 	bezeichnung		varchar,
 	PRIMARY KEY (ogc_fid)
 );
+COMMENT ON TABLE ks_bauraumoderbodenordnungsrecht IS 'BASE: ks_bauraumoderbodenordnungsrecht';
 
 SELECT AddGeometryColumn('ks_bauraumoderbodenordnungsrecht','wkb_geometry',:alkis_epsg,'GEOMETRY',2);
 
