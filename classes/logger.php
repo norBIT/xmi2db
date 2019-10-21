@@ -3,7 +3,7 @@ class Logger {
   function __construct($level = 0, $filename = '/tmp/xmi2db.log') {
     $this->level = $level;
     $this->debug = false;
-    $this->text = '';
+    $this->text = [];
     if ($level & 2) {
       $this->file = fopen($filename, 'w');
     }

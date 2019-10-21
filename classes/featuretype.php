@@ -471,7 +471,7 @@ CREATE INDEX " . $this->name . "_endet ON " . $this->name . " USING btree (endet
     # Set epsg code
     if (!empty(GEOMETRY_EPSG_CODE) and $this->hasGeometryColumn()) {
       $sql .= "
-SELECT AddGeometryColumn('" . $this->name . "', '" . GEOMETRY_COLUMN_NAME . "', " . GEOMETRY_EPSG_CODE . ", 'GEOMETRY', 2);";
+SELECT AddGeometryColumn('" . $this->name . "', '" . GEOMETRY_COLUMN_NAME . "', " . GEOMETRY_EPSG_CODE . ", 'GEOMETRY', " . ($this->name=="ax_punktortau" ? 3 : 2) . ");";
       if(WITH_INDEXES) {
         $sql .= "
 CREATE INDEX " . $this->ogrSchema->identifier( $this->name . "_" . GEOMETRY_COLUMN_NAME . "_idx" ) . " ON " . $this->name . " USING gist (" . GEOMETRY_COLUMN_NAME . ");";
@@ -705,7 +705,7 @@ CREATE INDEX " . $this->name . "_endet ON " . $this->name . " USING btree (endet
     # Set epsg code
     if (!empty(GEOMETRY_EPSG_CODE) and $this->hasGeometryColumn()) {
       $sql .= "
-SELECT AddGeometryColumn('" . $this->name . "', '" . GEOMETRY_COLUMN_NAME . "', " . GEOMETRY_EPSG_CODE . ", 'GEOMETRY', 2);";
+SELECT AddGeometryColumn('" . $this->name . "', '" . GEOMETRY_COLUMN_NAME . "', " . GEOMETRY_EPSG_CODE . ", 'GEOMETRY', " . ($this->name=="ax_punktortau" ? 3 : 2) . ");";
       if(WITH_INDEXES) {
         $sql .= "
 CREATE INDEX " . $this->ogrSchema->identifier( $this->name . "_" . GEOMETRY_COLUMN_NAME . "_idx" ) . " ON " . $this->name . " USING gist (" . GEOMETRY_COLUMN_NAME . ");";
@@ -808,11 +808,11 @@ CREATE INDEX " . $this->ogrSchema->identifier( $this->name . "_objektkoordinaten
 
     if ($hat_position) {
       $attribute_parts[] .= "
-      <GeomPropertyDefn>
-        <Name>wkb_geometry</Name>
-        <ElementPath>position</ElementPath>
-        <GeometryType>" . $this->getGeometryType() . "</GeometryType>
-      </GeomPropertyDefn>";
+    <GeomPropertyDefn>
+      <Name>wkb_geometry</Name>
+      <ElementPath>position</ElementPath>
+      <GeometryType>" . $this->getGeometryType() . "</GeometryType>
+    </GeomPropertyDefn>";
     }
 
     if($hat_objektkoordinaten) {

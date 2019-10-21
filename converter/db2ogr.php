@@ -108,6 +108,8 @@
     $sql .= file_get_contents('../sql/nrw-kom.sql');
   }
 
+  $sql .= "\nEND;\n";
+
 # $gmlSchema->execSql($sql);
 
   $logger->log("<pre>

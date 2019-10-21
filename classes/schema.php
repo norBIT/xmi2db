@@ -50,6 +50,7 @@ class Schema {
     $sql = '-- ' . VERSION . "\n";
     $sql .= '-- gewählte Pakete: ' . $packages . "\n";
     $sql .= '-- gewählte Filter: ' . FILTER_INFO . "\n";
+    $sql .= "\nBEGIN;\n";
 
     IF(CREATE_SCHEMA) {
       $sql .= 'DROP SCHEMA IF EXISTS ' . $this->schemaName . " CASCADE;\n";
@@ -57,9 +58,11 @@ class Schema {
       if(COMMENTS) {
         $sql .= 'COMMENT ON SCHEMA ' . $this->schemaName . " IS '" . VERSION . "';\n";
       }
-    }
 
-    $sql .= 'SET search_path = ' . $this->schemaName . ", public;\n";
+      $sql .= 'SET search_path = ' . $this->schemaName . ", public;\n";
+    } else {
+      $sql .= "\nSET search_path = :\"alkis_schema\", :\"postgis_schema\", public;\n";
+    }
 
     if (WITH_UUID_OSSP) {
       $sql .= 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp"' . ";\n";
@@ -90,7 +93,7 @@ class Schema {
    * Lade alle Generalisierungen, die selber nicht von anderen abgeleitet sind
    **/
   function getTopUmlClasses($stereotype) {
-    if (defined('PACKAGES')) $packSql = "AND p.name IN (" . str_replace(';', ',', PACKAGES) . ")";
+    if (defined('PACKAGES')) $packSql = " AND p.name IN (" . str_replace(';', ',', PACKAGES) . ")";
     else $packSql = "";
 
     $sql = "
@@ -224,7 +227,7 @@ WHERE
   }
 
   function getEnumerations() {
-    if (defined('PACKAGES')) $packSql = "AND p.name IN (" . str_replace(';', ',', PACKAGES) . ")";
+    if (defined('PACKAGES')) $packSql = " AND p.name IN (" . str_replace(';', ',', PACKAGES) . ")";
     else $packSql = "";
     $sql = "
 SELECT
@@ -250,7 +253,7 @@ WHERE
   }
 
   function getCodeLists() {
-    if (defined('PACKAGES')) $packSql = "AND p.name IN (" . str_replace(';', ',', PACKAGES) . ")";
+    if (defined('PACKAGES')) $packSql = " AND p.name IN (" . str_replace(';', ',', PACKAGES) . ")";
     else $packSql = "";
     $sql = "
 SELECT
@@ -336,7 +339,7 @@ SELECT
 	#$tagged_values_select . "
 	"
 FROM
-	" . $this->schemaName . ".uml_classes c JOIN 
+	" . $this->schemaName . ".uml_classes c JOIN
 	" . $this->schemaName . ".uml_attributes a ON c.id = a.uml_class_id LEFT JOIN
 	" . $this->schemaName . ".datatypes d ON a.datatype = d.xmi_id LEFT JOIN
 	" . $this->schemaName . ".uml_classes dc ON d.name = dc.name LEFT JOIN
@@ -1034,7 +1037,7 @@ COMMENT ON COLUMN " . strtolower($class['name']) . "." . strtolower($attribute['
   );
   ";
       if(COMMENTS) {
-  	$sql .= "
+	$sql .= "
   COMMENT ON TABLE {$table} IS 'Association {$association['a_class']} {$delimiter} {$association['b_class']}';
   ";
 
@@ -1069,7 +1072,7 @@ COMMENT ON COLUMN " . strtolower($class['name']) . "." . strtolower($attribute['
   ";
 
         if(COMMENTS) {
-  	$sql .= "
+          $sql .= "
   COMMENT ON COLUMN " . $table .".". $table ."
   IS '" . $table_orig .
   "';

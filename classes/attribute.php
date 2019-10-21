@@ -6,7 +6,7 @@ class Attribute {
     $this->name = $this->getName($name);
     $this->brackets = '';
     $this->parent = $parent;
-    $this->parts = parts;
+    $this->parts = $parts;
     $this->datatype = strtolower(substr($datatype, 0, PG_MAX_NAME_LENGTH));
     $this->datatype_alias = $datatype;
     $this->attribute_type = '';
@@ -126,13 +126,13 @@ COMMENT ON COLUMN " . $table_name . "." . $this->name . " IS '";
 
     if($this->isExternal) {
       $parts = explode('|', $this->getAttributePath());
-    	if (end($elements) != end($parts)) {
+      if (end($elements) != end($parts)) {
         $elements[] = end($parts);
       }
       else {
         if( isset($this->datatype_alias) ) {
           $elements[] = $this->datatype_alias;
-        } 
+        }
         else {
           $elements[] = "CharacterString";
         }
