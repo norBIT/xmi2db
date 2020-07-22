@@ -104,9 +104,10 @@ SELECT
 FROM
   " . $this->schemaName . ".packages p LEFT JOIN
   " . $this->schemaName . ".uml_classes c ON p.id = c.package_id LEFT JOIN
-  " . $this->schemaName . ".stereotypes s ON c.stereotype_id = s.xmi_id
+  " . $this->schemaName . ".stereotypes s ON c.stereotype_id = s.xmi_id LEFT OUTER JOIN
+  " . $this->schemaName . ".class_generalizations g ON g.xmi_id=general_id
 WHERE
-  general_id = '-1' AND
+  g.xmi_id IS NULL AND
   lower(s.name) LIKE '" . strtolower($stereotype) . "'"
   .$packSql."
 ";
@@ -189,7 +190,7 @@ WHERE
     return $result;
   }
 
-  function getSubUmlClasses($stereotype, $class) {
+  function getSubUmlClasses($class) {
     if (defined('PACKAGES')) $packSql = " AND pa.name IN (" . str_replace(';', ',', PACKAGES) . ")";
     else $packSql = "";
     $sql = "
@@ -239,7 +240,7 @@ FROM
   " . $this->schemaName . ".uml_classes c ON p.id = c.package_id LEFT JOIN
   " . $this->schemaName . ".stereotypes s ON c.stereotype_id = s.xmi_id
 WHERE
-  lower(s.name) = 'enumeration'"
+  'enumeration' IN (lower(s.name),lower(s.\"baseClass\"))"
   .$packSql."
 ";
     $this->logger->log('<br><b>Get Enumerations</b>');
@@ -343,7 +344,7 @@ FROM
 	" . $this->schemaName . ".uml_attributes a ON c.id = a.uml_class_id LEFT JOIN
 	" . $this->schemaName . ".datatypes d ON a.datatype = d.xmi_id LEFT JOIN
 	" . $this->schemaName . ".uml_classes dc ON d.name = dc.name LEFT JOIN
-	" . $this->schemaName . ".stereotypes ds ON dc.stereotype_id = ds.xmi_id Left JOIN
+	" . $this->schemaName . ".stereotypes ds ON dc.stereotype_id = ds.xmi_id LEFT JOIN
 	" . $this->schemaName . ".uml_classes cc ON a.classifier = cc.xmi_id LEFT JOIN
 	" . $this->schemaName . ".datatypes cd ON a.classifier = cd.xmi_id LEFT JOIN
 	" . $this->schemaName . ".stereotypes cs ON cc.stereotype_id = cs.xmi_id"
@@ -443,7 +444,6 @@ WHERE
         ca.name a_class_name,
         b.id b_id,
         trim(both ' ' FROM CASE WHEN b.name = '<undefined>' AND NOT b.\"isNavigable\" THEN 'inversZu_' || a.name || '_' || cb.name ELSE b.name END) AS b_name,
-        -- b.name b_name,
         b.multiplicity_range_lower b_multiplicity_range_lower,
         b.multiplicity_range_upper b_multiplicity_range_upper,
         a.id a_id,
@@ -786,7 +786,7 @@ COMMENT ON COLUMN " . strtolower($class['name']) . "." . strtolower($attribute['
         $this->dataTypes[$dataType->name] = $dataType;
 
       # lade abgeleitete Klassen
-      $subClasses = $this->getSubUmlClasses($stereotype, $class);
+      $subClasses = $this->getSubUmlClasses($class);
 
       # Für alle abgeleiteten Klassen
       foreach($subClasses as $subClass) {
@@ -865,7 +865,7 @@ COMMENT ON COLUMN " . strtolower($class['name']) . "." . strtolower($attribute['
     $this->logger->log($featureType->associationsAsTable());
 
     # lade abgeleitete Klassen
-    $subClasses = $this->getSubUmlClasses($stereotype, $class);
+    $subClasses = $this->getSubUmlClasses($class);
 
     # User Info Spalten nur für Leaf Klassen erzeugen.
     if ($createUserInfoColumns AND empty($parent)) {
@@ -886,6 +886,7 @@ COMMENT ON COLUMN " . strtolower($class['name']) . "." . strtolower($attribute['
       $this->logger->log('<br><b>Sub' . $stereotype . ': ' . $subClass['name'] . '</b> (' . $subClass['xmi_id'] . ')');
       $sql .= $this->createFeatureTypeTables($stereotype, $featureType, $subClass, $new_parts, $createUserInfoColumns);
     }
+
     return $sql;
   }
 
@@ -1014,7 +1015,7 @@ COMMENT ON COLUMN " . strtolower($class['name']) . "." . strtolower($attribute['
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" backgroundColor="#FFFFE1" configuration="com.yworks.entityRelationship.label.name" fontFamily="Courier" fontSize="12" fontStyle="plain" hasLineColor="false" height="19.66796875" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="t" textColor="#000000" verticalTextPosition="bottom" visible="true" width="184.029296875" x="17.9853515625" y="4.0">' . $table . '</y:NodeLabel>
           <y:NodeLabel alignment="left" autoSizePolicy="content" backgroundColor="#FFFFFF" configuration="com.yworks.entityRelationship.label.attributes" fontFamily="Courier" fontSize="12" fontStyle="plain" hasLineColor="false" height="51.00390625" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="90.4140625" x="2.0" y="31.66796875">
-            ' .  strtolower($association['a_class']) . '_' . $key1 . ' ' . $fkey_type . '
+            ' . strtolower($association['a_class']) . '_' . $key1 . ' ' . $fkey_type . '
             ' . strtolower($association['b_class']) . '_' . $key2 . ' ' . $fkey_type . '
             <y:LabelModel>
               <y:ErdAttributesNodeLabelModel/>
